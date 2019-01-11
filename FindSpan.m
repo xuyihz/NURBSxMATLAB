@@ -1,14 +1,16 @@
 %% Determine the knot span index (left)
 % Input:  u, degree, knotVector
 % Output: the knot span index
-%
+% only works for knotVector's first 3 terms are equal && last 3 terms are equal
 % Xu Yi, 2019
 
 %%
 function knotspanIndex = FindSpan(u, degree, knotVector)
 knotNum = length(knotVector);
 if u == knotVector(knotNum) % special case
-    knotspanIndex = knotNum-1;
+    knotspanIndex = knotNum-(degree+1); % only when last 3 terms are equal
+elseif u == knotVector(1) % special case
+    knotspanIndex = degree+1; % only when first 3 terms are equal
 else % do binary search
     temp_low = degree; % degree = order -1;
     temp_high = knotNum;
