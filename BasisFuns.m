@@ -5,8 +5,9 @@
 % Xu Yi, 2019
 
 %%
-function [basisFunValue, dersBasisFunValue] = BasisFuns(u, knotspanIndex, degree, knotVector)
+function [basisFunValue, dersBasisFunValue] = BasisFuns(u, degree, knotVector)
 % basisFunValue N(u) % knotspanIndex = i+1;
+knotspanIndex = FindSpan(u, degree, knotVector);
 N = zeros(degree+1,degree+1); N(1,1) = 1; % initialize. N0 = 1
 for i = 1:degree % order = degree+1;
     for j = 1:i+1 % the NURBS book 2nd. P70
