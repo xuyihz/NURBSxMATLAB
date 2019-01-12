@@ -8,20 +8,22 @@
 function knotspanIndex = FindSpan(u, degree, knotVector)
 knotNum = length(knotVector);
 if u == knotVector(knotNum) % special case
-    knotspanIndex = knotNum-(degree+1); % only when last 3 terms are equal
+    knotspanIndex = knotNum - degree; % only when last 3 terms are equal
 elseif u == knotVector(1) % special case
     knotspanIndex = degree+1; % only when first 3 terms are equal
 else % do binary search
-    temp_low = degree; % degree = order -1;
-    temp_high = knotNum;
+    temp_low = degree+1; % degree = order -1;
+    temp_high = knotNum - degree;
     temp_mid = floor( (temp_low+temp_high) /2);
     while u < knotVector(temp_mid) || u >= knotVector(temp_mid+1)
-        if u < knotVector(temp_mid)
+        if u == knotVector(temp_mid)
+            break
+        elseif u < knotVector(temp_mid)
             temp_high = temp_mid;
         else
             temp_low = temp_mid;
         end
         temp_mid = floor( (temp_low+temp_high) /2);
-        knotspanIndex = temp_mid;
     end
+    knotspanIndex = temp_mid;
 end

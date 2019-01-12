@@ -1,7 +1,7 @@
 %% Compute the nonvanishing basis functions
 % Input:  u, knotspanIndex, degree, knotVector
 % Output: the basis function values
-%
+% only works for knotVector is not repeated except first & last 3 terms
 % Xu Yi, 2019
 
 %%
