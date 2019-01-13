@@ -2,12 +2,13 @@
 % Input:  u, knotspanIndex, degree, knotVector
 % Output: the basis function values & their derivatives
 % only works for knotVector has no double knots or more except first & last 3 terms
+% The number of knots is always equal to the number of control points plus curve degree plus one (i.e. number of control points plus curve order).
 % Xu Yi, 2019
 
 %%
 function [basisFunValue, dersBasisFunValue] = BasisFuns(u, degree, knotVector)
 % basisFunValue N(u) % knotspanIndex = i+1;
-knotspanIndex = FindSpan(u, degree, knotVector);
+knotspanIndex = FindSpan(u, knotVector);
 N = zeros(degree+1,degree+1); N(1,1) = 1; % initialize. N0 = 1
 for i = 1:degree % order = degree+1;
     for j = 1:i+1 % the NURBS book 2nd. P70
