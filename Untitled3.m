@@ -1,13 +1,13 @@
 clear
 clc
 
-%%
-% degree = 2;
-% knotVector = [0,0,0,1,2,3,4,4,5,5,5];
-% u = 5/2;
-% [basisFunValue, dersBasisFunValue] = BasisFuns(u, degree, knotVector);
+%% varify BasisFuns
+degree = 2;
+knotVector = [0,0,0,1,2,3,4,4,5,5,5];
+u = 5/2;
+[basisFunValue, dersBasisFunValue] = BasisFuns(u, degree, knotVector);
 
-%%
+%% Surface
 % degreeU = 2;
 % knotVectorU = [0,0,0,1,2,3,4,4,5,5,5];
 % u = 5/2;
@@ -20,25 +20,25 @@ clc
 % weightVector = rand(7,7);
 % surfacePt = NurbsSrfPt(u, degreeU, knotVectorU, v, degreeV, knotVectorV, cvPtX, cvPtY, cvPtZ, weightVector);
 
-%%
-U = linspace(0,1);
-% U = 0;
-% U = 1;
-% U = 1/2;
-curve = zeros(length(U),2);
-for i = 1:length(U)
-u = U(i);
-degree = 3;
-knotVector = [0, 0, 0, 0, 1, 1, 1, 1];
-cvPtX = [-0.083270996807659842,...
-    2.7895783930565914,...
-    5.0378953068634038,...
-    6.9531282334395685];
-cvPtY = [0.020817749201915078,...
-    -5.683245532122764,...
-    6.4743200017955296,...
-    -0.22899524122106429];
-weightVector = ones(1,length(cvPtX));
-curvePt = NurbsCrvPt(u, degree, knotVector, cvPtX, cvPtY, weightVector);
-curve(i,:) = curvePt;
-end
+%% Curve
+% U = linspace(0,1);
+% % U = 0;
+% % U = 1;
+% % U = 1/2;
+% curve = zeros(length(U),2);
+% for i = 1:length(U)
+% u = U(i);
+% degree = 3;
+% knotVector = [0, 0, 0, 0, 1, 1, 1, 1];
+% cvPtX = [0.084641712804496352,...
+%     3.3218617663495729,...
+%     6.9286011411941901,...
+%     2.3699679585258182];
+% cvPtY = [0.063481284603371504,...
+%     5.0654020277678935,...
+%     -3.0670589716973753,...
+%     -3.9570000736100668];
+% weightVector = ones(1,length(cvPtX));
+% curvePt = NurbsCrvPt(u, degree, knotVector, cvPtX, cvPtY, weightVector);
+% curve(i,:) = curvePt;
+% end

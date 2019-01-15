@@ -8,12 +8,13 @@
 %%
 function [basisFunValue, dersBasisFunValue] = BasisFuns(u, degree, knotVector)
 % basisFunValue N(u) % knotspanIndex = i+1;
-knotspanIndex = FindSpan(u, knotVector);
-N = zeros(degree+1,degree+1); N(1,1) = 1; % initialize. N0 = 1
+knotspanIndex = FindSpan(u, knotVector); % returns the span index.
+% computes all the nonzero basis functions @u and stores them in the array N[i,:].
+N = zeros(degree+1,degree+1); N(1,degree+1) = 1; % initialize. Ndegree+1,0 = 1
 for i = 1:degree % order = degree+1;
     for j = 1:i+1 % the NURBS book 2nd. P70
         left1 = u - knotVector( knotspanIndex-( i-j ) );
-        left2 = u - knotVector( knotspanIndex-( i-(j-1) ) );
+        left2 = u - knotVector( knotspanIndex-( i+1-j ) );
         right1 = knotVector( knotspanIndex-1+j ) - u;
         right2 = knotVector( knotspanIndex+j ) - u;
         Para1 = left2/(right1+left2);
@@ -23,12 +24,13 @@ for i = 1:degree % order = degree+1;
         elseif right2+left1 == 0
             Para2 = 0;
         end
+        Nindex = degree+1-(i+1-j); % N: Lower right triangle
         if j == 1 % the first term of Eq. (2.14) are not computed, since Ni = 0;
-            N(i+1,j) = Para2 * N(i,j);
+            N(i+1,Nindex) = Para2 * N(i,Nindex+1);
         elseif j == i+1 % the last term of Eq. (2.16) are not computed, since Ni = 0;
-            N(i+1,j) = Para1 * N(i,j-1);
+            N(i+1,Nindex) = Para1 * N(i,Nindex);
         else
-            N(i+1,j) = Para1 * N(i,j-1) + Para2 * N(i,j);
+            N(i+1,Nindex) = Para1 * N(i,Nindex) + Para2 * N(i,Nindex+1);
         end
     end
 end
@@ -57,7 +59,7 @@ for i = 1:degree % derivative. k<=p
         temp1 = factorial(degree) / factorial(degree-i);
         temp2 = 0;
         for k = 1:i+1
-            temp211 = j+k-i-1;
+            temp211 = j+k-1;
             if temp211 > degree+1
                 temp21 = 0;
             elseif temp211 < 1
