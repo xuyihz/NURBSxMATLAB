@@ -3,6 +3,7 @@
 % Output: the basis function values & their derivatives
 % only works for knotVector has no double knots or more except first & last 3 terms
 % The number of knots is always equal to the number of control points plus curve degree plus one (i.e. number of control points plus curve order).
+% the half-open interval, [u;, ui+1 ), special case when u = ui+1.
 % Xu Yi, 2019
 
 %%
@@ -16,7 +17,11 @@ for i = 1:degree % order = degree+1;
         left1 = u - knotVector( knotspanIndex-( i-j ) );
         left2 = u - knotVector( knotspanIndex-( i+1-j ) );
         right1 = knotVector( knotspanIndex-1+j ) - u;
-        right2 = knotVector( knotspanIndex+j ) - u;
+        if knotspanIndex+j > length(knotVector) % special case
+            right2 = 0;
+        else
+            right2 = knotVector( knotspanIndex+j ) - u;
+        end
         Para1 = left2/(right1+left2);
         Para2 = right2/(right2+left1);
         if right1+left2 == 0 % define 0/0=0
@@ -37,10 +42,14 @@ end
 % derivatives % the NURBS book 2nd. P61 (2.10)
 % parameter a
 Para_a = zeros(degree+1,degree+1,degree+1); Para_a(1,1,:) = 1; % initialize. a0,0 = 1
-for i = 1:degree % a0,0 is initialized
+for i = 1:degree % a0,0 is initialized / ith derivative
     for j = 1:i+1
         for k = 1:degree+1 % a is subject to i(which in Ni)
-            temp = knotVector( knotspanIndex+k-(degree+1) + degree +j-1 -i+1 ) - knotVector( knotspanIndex+k-(degree+1) +j-1 );
+            if knotspanIndex+k-(degree+1) + degree +j-1 -i+1 > length(knotVector) % special case
+                temp = 0;
+            else
+                temp = knotVector( knotspanIndex+k-(degree+1) + degree +j-1 -i+1 ) - knotVector( knotspanIndex+k-(degree+1) +j-1 );
+            end
             if j == 1
                 Para_a(i+1,j,k) = Para_a(i,1,k) / temp;
             elseif j == i+1
