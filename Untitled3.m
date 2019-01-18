@@ -86,29 +86,29 @@ clc
 % scatter3(reshape(cvPtX,[],1), reshape(cvPtY,[],1), reshape(cvPtZ,[],1));
 
 %% Curve
-U = linspace(0,1);
-curve = zeros(length(U),2); % 2D pt
-degree = 3;
-knotVector = [0, 0, 0, 0, 1, 1, 1, 1];
-weightVector = ones(1,length(knotVector)-degree-1);
-cvPtX = [0.084641712804496352,...
-    3.3218617663495729,...
-    6.9286011411941901,...
-    2.3699679585258182];
-cvPtY = [0.063481284603371504,...
-    5.0654020277678935,...
-    -3.0670589716973753,...
-    -3.9570000736100668];
-for i = 1:length(U)
-u = U(i);
-curve(i,:) = NurbsCrvPt(u, degree, knotVector, cvPtX, cvPtY, weightVector);
-end
-plot(curve(:,1),curve(:,2));
-hold on
-scatter(cvPtX,cvPtY);
-
-fileID = fopen('CurveLisp.lsp','w');
-for i = 1:length(U)
-    fprintf(fileID,'(COMMAND "POINT" "%f,%f")\n',curve(i,1),curve(i,2));
-end
-fclose('all');
+% U = linspace(0,1);
+% curve = zeros(length(U),2); % 2D pt
+% degree = 3;
+% knotVector = [0, 0, 0, 0, 1, 1, 1, 1];
+% weightVector = ones(1,length(knotVector)-degree-1);
+% cvPtX = [0.084641712804496352,...
+%     3.3218617663495729,...
+%     6.9286011411941901,...
+%     2.3699679585258182];
+% cvPtY = [0.063481284603371504,...
+%     5.0654020277678935,...
+%     -3.0670589716973753,...
+%     -3.9570000736100668];
+% for i = 1:length(U)
+% u = U(i);
+% curve(i,:) = NurbsCrvPt(u, degree, knotVector, cvPtX, cvPtY, weightVector);
+% end
+% plot(curve(:,1),curve(:,2));
+% hold on
+% scatter(cvPtX,cvPtY);
+% 
+% fileID = fopen('CurveLisp.lsp','w');
+% for i = 1:length(U)
+%     fprintf(fileID,'(COMMAND "POINT" "%f,%f")\n',curve(i,1),curve(i,2));
+% end
+% fclose('all');
