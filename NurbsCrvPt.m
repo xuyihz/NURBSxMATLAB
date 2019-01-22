@@ -5,7 +5,7 @@
 % Xu Yi, 2019
 
 %%
-function curvePt = NurbsCrvPt(u, degree, knotVector, cvPtX, cvPtY, weightVector)
+function [curvePt, dersCurvePt] = NurbsCrvPt(u, degree, knotVector, cvPtX, cvPtY, weightVector)
 % u
 knotspanIndex = FindSpan(u, knotVector);
 [basisFunValue, dersBasisFunValue] = BasisFuns(u, degree, knotVector);
@@ -26,4 +26,9 @@ else
         / W;
 end
 curvePt = [PtX, PtY];
+
+Aders = 
+
+wders
+
 end
