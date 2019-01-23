@@ -32,9 +32,7 @@ else
 end
 curvePt = [PtX, PtY, PtZ];
 % derivative. The NURBS book 2nd page125 (4.8)
-specialCase = 0;
 if knotspanIndex == length(knotVector) - degree % special case / not work
-    specialCase = 1;
     knotspanIndex = knotspanIndex -1;
     basisFunValue_temp = basisFunValue(end,:);
     basisFunValue(end,1) = 0;
@@ -46,6 +44,7 @@ if knotspanIndex == length(knotVector) - degree % special case / not work
     end
     W = basisFunValue(end,:)...
         * ( weightVector( (knotspanIndex-degree):knotspanIndex )' );
+    % note that The NURBS book 2nd page126 (4.10), 1-um-p-1 might be 0.
 end
 % Aders
 AdersX = genAders(WcvPtX, degree, knotspanIndex, basisFunValue, dersBasisFunValue);
@@ -57,11 +56,6 @@ wders = genWders(degree, W, dersBasisFunValue, weightVector, knotspanIndex);
 dersPtX = genDersPt(AdersX, PtX, degree, wders);
 dersPtY = genDersPt(AdersY, PtY, degree, wders);
 dersPtZ = genDersPt(AdersZ, PtZ, degree, wders);
-if specialCase == 1
-    dersPtX(2) = genSpecialCase(cvPtX, degree, knotVector, weightVector);
-    dersPtY(2) = genSpecialCase(cvPtY, degree, knotVector, weightVector);
-    dersPtZ(2) = genSpecialCase(cvPtZ, degree, knotVector, weightVector);
-end
 dersCurvePt = [dersPtX, dersPtY, dersPtZ];
 end
 
@@ -94,9 +88,4 @@ for i = 1:degree
     end
     dersPt(i+1) = ( Aders(i+1) - wPt ) / wders(1);
 end
-end
-function dersPt = genSpecialCase(cvPt, degree, knotVector, weightVector)
-dersPt = degree / ( 1-knotVector(end-degree) )...
-    * weightVector(end-1) / weightVector(end)...
-    * ( cvPt(end) - cvPt(end-1) );
 end
