@@ -14,3 +14,6 @@ A2.2 u= 4:VectorValue=0 (推导当knotVector中有重复节点值(在中间)出现时的公式 spec
 
 IGES格式 / STEP格式
 ShrinkTrimmedSrfToEdge 缩回已修剪曲面
+
+p99 4.20 / S计算顺序 / 看p101 算法4.4 / 尝试表驱动
+边界处考虑
