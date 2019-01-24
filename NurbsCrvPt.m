@@ -79,7 +79,7 @@ end
 function dersPt = genDersPt(Aders, Pt, degree, wders)
 dersPt = zeros(degree+1,1);
 dersPt(1) = Pt;
-for i = 1:degree
+for i = 1:degree % ÓësurfaceÂß¼­²»Í¬
     wPt = 0; % initialize
     for j = 1:i
         wPt_temp = factorial(i)/factorial(j)/factorial(i-j)...

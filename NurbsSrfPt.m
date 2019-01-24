@@ -2,6 +2,7 @@
 % Input:  u,v, degree(U,V), knotVector(U,V), cvPt(X,Y,Z), weightVector
 % Output: point on non-uniform rational B-spline surface
 % column:u / row:v
+% it doesn't work at boundaries.
 % Xu Yi, 2019
 
 %%
@@ -70,6 +71,13 @@ dersBasisCombU(2:end,:) = dersBasisFunValueU;
 dersBasisCombV = zeros(degreeV+1,degreeV+1);
 dersBasisCombV(1,:) = basisFunValueV(end,:);
 dersBasisCombV(2:end,:) = dersBasisFunValueV;
+% boundary
+if knotspanIndexU == length(knotVectorU) - degreeU % special case / like curve @ V
+    [knotspanIndexU, dersBasisCombU] = specialCase(knotspanIndexU, dersBasisCombU, degreeU);
+end
+if knotspanIndexV == length(knotVectorV) - degreeV % special case / like curve @ U
+    [knotspanIndexV, dersBasisCombV] = specialCase(knotspanIndexV, dersBasisCombV, degreeV);
+end
 % Aders
 AdersX = genAders(WcvPtX,...
     degreeU, knotspanIndexU, dersBasisCombU,...
@@ -85,12 +93,21 @@ wders = genWders(weightVector,...
     degreeU, knotspanIndexU, dersBasisCombU,...
     degreeV, knotspanIndexV, dersBasisCombV);
 % dersSurfacePt
-dersPtX = genDersPt(AdersX, PtX, degreeU, degreeV, wders);
-dersPtY = genDersPt(AdersY, PtY, degreeU, degreeV, wders);
-dersPtZ = genDersPt(AdersZ, PtZ, degreeU, degreeV, wders);
-dersSurfacePt = [dersPtX, dersPtY, dersPtZ];
+dersPtX = genDersPt(AdersX, degreeU, degreeV, wders);
+dersPtY = genDersPt(AdersY, degreeU, degreeV, wders);
+dersPtZ = genDersPt(AdersZ, degreeU, degreeV, wders);
+dersSurfacePt = zeros(degreeU+degreeV+1,degreeU+1,3);
+dersSurfacePt(:,:,1) = dersPtX;
+dersSurfacePt(:,:,2) = dersPtY;
+dersSurfacePt(:,:,3) = dersPtZ;
 end
 
+function [knotspanIndex, dersBasisComb] = specialCase(knotspanIndex, dersBasisComb, degree)
+knotspanIndex = knotspanIndex -1;
+dersBasisCombU_temp = dersBasisComb;
+dersBasisComb(:,1) = zeros(degree+1,1);
+dersBasisComb(:,2:end) = dersBasisCombU_temp(:,1:end-1);
+end
 function Aders = genAders(WcvPt,...
     degreeU, knotspanIndexU, dersBasisCombU,...
     degreeV, knotspanIndexV, dersBasisCombV)
@@ -115,37 +132,42 @@ for i = 1:degreeU+1
     end
 end
 end
-function dersPt = genDersPt(Aders, Pt, degreeU, degreeV, wders)
+function dersPt = genDersPt(Aders, degreeU, degreeV, wders)
 dersPt = zeros(degreeU+degreeV+1,degreeU+1);
 for i = 1:degreeU+1
     for j = 1:degreeV+1
-        if i == 1 && j == 1 % special case
-            break
-        end
         wPt = 0; % initialize
-        for ii = 1:i
-            wPt_temp = factorial(i)/factorial(ii)/factorial(i-ii)...
-                * wders(ii+1,ii+1) * dersPt(i-ii+1+j,i-ii+2);
-            wPt = wPt + wPt_temp;
-        end
-        for jj = 1:j
-            wPt_temp = factorial(j)/factorial(jj)/factorial(j-jj)...
-                * wders(jj+1,1) * dersPt(i+1+j-jj,i+1);
-            wPt = wPt + wPt_temp;
-        end
-        for ii = 1:i
-            for jj = 1:j
-                wPt_temp = factorial(i)/factorial(ii)/factorial(i-ii)...
-                    * factorial(j)/factorial(jj)/factorial(j-jj)...
-                    * wders(ii+jj+1,ii+1) * dersPt(i-ii+1+j-jj,i-ii+1);
+        if i == 1 % special case
+        elseif j == 1
+        else
+            for ii = 2:i %
+                wPt_temp = factorial(i-1)/factorial(ii-1)/factorial(i-ii)...
+                    * wders(ii,ii) * dersPt(i-ii+j,i-ii+1);
                 wPt = wPt + wPt_temp;
             end
         end
-        if i == 1 && j == 1 % special case
-            dersPt(i,j) = Pt;
+        if j == 1 % special case
+        elseif i == 1
         else
-            dersPt(i,j) = ( Aders(i+j-1,i) - wPt ) / wders(1,1);
+            for jj = 2:j
+                wPt_temp = factorial(j-1)/factorial(jj-1)/factorial(j-jj)...
+                    * wders(jj,1) * dersPt(i+j-jj,i);
+                wPt = wPt + wPt_temp;
+            end
         end
+        if i == 1 % special case
+        elseif j == 1 % special case
+        else
+            for ii = 2:i
+                for jj = 2:j
+                    wPt_temp = factorial(i-1)/factorial(ii-1)/factorial(i-ii)...
+                        * factorial(j-1)/factorial(jj-1)/factorial(j-jj)...
+                        * wders(ii+jj-1,ii) * dersPt(i-ii+1+j-jj+1-1,i-ii+1);
+                    wPt = wPt + wPt_temp;
+                end
+            end
+        end
+        dersPt(i,j) = ( Aders(i+j-1,i) - wPt ) / wders(1,1);
     end
 end
 end
