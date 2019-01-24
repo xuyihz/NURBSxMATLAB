@@ -167,7 +167,7 @@ for i = 1:degreeU+1
                 end
             end
         end
-        dersPt(i,j) = ( Aders(i+j-1,i) - wPt ) / wders(1,1);
+        dersPt(i+j-1,i) = ( Aders(i+j-1,i) - wPt ) / wders(1,1);
     end
 end
 end
