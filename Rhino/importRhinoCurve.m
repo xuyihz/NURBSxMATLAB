@@ -1,57 +1,75 @@
 %% function
 % import Rhino 'List'
-%
+% 
 % Xu Yi, 2019
 
 %%
-function importRhinoCurve(fileID)
-temp = 0; % temp = fscanf(fid,'%s',1);
-while temp ~= 'order'
-    temp = fscanf(fileID,'%s',1); % A = fscanf(fileID,formatSpec,sizeA)
+function [degree, cv_count, knotNum, knotVector, cvPt] = importRhinoCurve(filename)
+fileID = fopen(filename);
+stringTemp = '0'; % temp = fscanf(fid,'%s',1);
+while ~strcmp( stringTemp, 'order' ) % Compare strings
+    stringTemp = fscanf(fileID,'%s',1); % A = fscanf(fileID,formatSpec,sizeA)
 end
-fscanf(fileID,'%s',1);
-order = fscanf(fileID,'%d',1);
+fscanf(fileID,'%s',1); % 读掉'='
+stringTemp = fscanf(fileID,'%s',1);
+order = str2double(stringTemp);
+degree = order -1;
 
-while temp ~= 'cv_count'
-    temp = fscanf(fileID,'%s',1); % A = fscanf(fileID,formatSpec,sizeA)
+while ~strcmp( stringTemp, 'cv_count' )
+    stringTemp = fscanf(fileID,'%s',1); % A = fscanf(fileID,formatSpec,sizeA)
 end
-fscanf(fileID,'%s',1);
-cv_count = fscanf(fileID,'%d',1);
+fscanf(fileID,'%s',1); % 读掉'='
+stringTemp = fscanf(fileID,'%s',1);
+cv_count = str2double(stringTemp);
 
-while temp ~= 'Knot'
-    temp = fscanf(fileID,'%s',1); % A = fscanf(fileID,formatSpec,sizeA)
+while ~strcmp( stringTemp, 'Knot' )
+    stringTemp = fscanf(fileID,'%s',1); % A = fscanf(fileID,formatSpec,sizeA)
 end
-temp = fscanf(fileID,'%s',1);
-temp = fscanf(fileID,'%s',1);
-knotNum = fscanf(fileID,'%d',1);
+fscanf(fileID,'%s',1); % 读掉'Vector'
+fscanf(fileID,'%s',1); % 读掉'('
+stringTemp = fscanf(fileID,'%s',1);
+knotNum = str2double(stringTemp);
 knotNum = knotNum+2; % Rhino的节点向量少了两个(第一个与最后一个)
-fgetl(fileID);
+fgetl(fileID); % 读掉该行
 fgetl(fileID);
 
 knotVector = zeros(1,knotNum);
 i = 2;
-while temp ~= 'Control'
-    fscanf(fileID,'%f',1);
-    temp = fscanf(fileID,'%f',1);
-    knotVector(i) = temp;
+fscanf(fileID,'%s',1); % 读掉'0'
+while ~strcmp( stringTemp, 'Control' )
+    stringTemp = fscanf(fileID,'%s',1);
+    knotTemp = str2double(stringTemp);
+    knotVector(i) = knotTemp;
     i = i+1;
-    knotMult = fscanf(fileID,'%d',1);
+    stringTemp = fscanf(fileID,'%s',1);
+    knotMult = str2double(stringTemp);
     fgetl(fileID);
-    for j = 1:knotMult-1
-        temp = fscanf(fileID,'%f',1);
-        knotVector(i) = temp;
-        i = i+1;
+    if knotMult ~= 1
+        for j = 1:knotMult-1
+            knotVector(i) = knotTemp;
+            i = i+1;
+        end
     end
+    stringTemp = fscanf(fileID,'%s',1); % 读掉index
 end
 knotVector(1) = knotVector(2);
 knotVector(end) = knotVector(end-1);
 
-fgetl(fileID);
+fgetl(fileID); % 读掉 Control Points 该行
 fgetl(fileID);
 cvPt = zeros(cv_count,3);
 for i = 1:cv_count
-    
+    fscanf(fileID,'%s',1);
+    if i <= 10
+        fscanf(fileID,'%s',1);
+    end
+    for j = 1:3
+        stringTemp = fscanf(fileID,'%s',1);
+        stringTemp = strrep(stringTemp, '(', ''); % modifiedStr = strrep(origStr, oldSubstr, newSubstr)
+        cvPtTemp = textscan(stringTemp,'%f');
+        cvPt(i,j) = cell2mat(cvPtTemp);
+    end
 end
 
-
+fclose(fileID);
 end
