@@ -4,7 +4,7 @@
 % Xu Yi, 2019
 
 %%
-function [degree, cv_count, knotNum, knotVector, cvPt] = importRhinoCurve(filename)
+function [degree, knotVector, cvPt] = importRhinoCurve(filename)
 fileID = fopen(filename);
 stringTemp = '0'; % temp = fscanf(fid,'%s',1);
 while ~strcmp( stringTemp, 'order' ) % Compare strings
@@ -65,7 +65,7 @@ for i = 1:cv_count
     end
     for j = 1:3
         stringTemp = fscanf(fileID,'%s',1);
-        stringTemp = strrep(stringTemp, '(', ''); % modifiedStr = strrep(origStr, oldSubstr, newSubstr)
+        stringTemp = strrep(stringTemp, '(', ''); % modifiedStr = strrep(origStr, oldSubstr, newSubstr) ÓÃ¿Õ°×Ìæ»»'('£¬¼´È¥µôÁË'('¡£
         cvPtTemp = textscan(stringTemp,'%f');
         cvPt(i,j) = cell2mat(cvPtTemp);
     end
