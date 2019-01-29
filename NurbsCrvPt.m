@@ -5,18 +5,18 @@
 % Xu Yi, 2019
 
 %%
-function [curvePt, dersCurvePt] = NurbsCrvPt(u, degree, knotVector, cvPtX, cvPtY, cvPtZ, weightVector)
+function [curvePt, dersCurvePt] = NurbsCrvPt(u, degree, knotVector, cvPt, weightVector)
 % u
 knotspanIndex = FindSpan(u, knotVector);
 [basisFunValue, dersBasisFunValue] = BasisFuns(u, degree, knotVector);
 % w.*P
-WcvPtX = cvPtX.* weightVector;
-WcvPtY = cvPtY.* weightVector;
-WcvPtZ = cvPtZ.* weightVector;
+WcvPtX = cvPt(:,1)'.* weightVector;
+WcvPtY = cvPt(:,2)'.* weightVector;
+WcvPtZ = cvPt(:,3)'.* weightVector;
 if knotspanIndex == length(knotVector) - degree % special case
-    PtX = cvPtX(end);
-    PtY = cvPtY(end);
-    PtZ = cvPtZ(end);
+    PtX = cvPt(end,1);
+    PtY = cvPt(end,2);
+    PtZ = cvPt(end,3);
 else
     W = basisFunValue(end,:)...
         * ( weightVector( (knotspanIndex-degree):knotspanIndex )' ); % 此处与surface不同
